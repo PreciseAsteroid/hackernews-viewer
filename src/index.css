@@ -17,11 +17,16 @@ ul, li{
   margin: 0;
 }
 
+form{
+  font-size: 20px;
+}
+
 input{
   padding: 10px;
   border-radius: 5px;
   outline: none;
   margin-right: 10px;
+  margin-left: 10px;
   border: 1px solid #dddddd;
 }
 
