@@ -50,12 +50,12 @@ const SORTS = {
   POINTS: list => sortBy(list, 'points').reverse(),
 };
 
-function isSearched(searchTerm) {
-  return function(item) {
-    // some condition which should return true or false
-    return !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
-  }
-}
+// function isSearched(searchTerm) {
+//   return function(item) {
+//     // some condition which should return true or false
+//     return !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
+//   }
+// }
 
 class App extends Component {
   constructor(props){
@@ -67,8 +67,7 @@ class App extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       isLoading: false,
-      sortKey: 'NONE',
-      isSortReverse: false,
+
     };
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
@@ -76,8 +75,7 @@ class App extends Component {
     this.needsToSearchTopstories = this.needsToSearchTopstories.bind(this);
     this.setSearchTopstories = this.setSearchTopstories.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
-    this.onSort = this.onSort.bind(this);
-  }
+    }
 
   onSort(sortKey){
     const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
@@ -168,8 +166,6 @@ class App extends Component {
       results,
       searchKey,
       isLoading,
-      sortKey,
-      isSortReverse,
     } = this.state;
 
     const page = (
@@ -195,16 +191,13 @@ class App extends Component {
           </div>
           <Table
             list={list}
-            sortKey={sortKey}
-            isSortReverse={isSortReverse}
             onDismiss={this.onDismiss}
-            onSort={this.onSort}
             />
 
           <div className='interactions'>
             <ButtonWithLoading
               isLoading={isLoading}
-              onClick = {()=>this.fetchSearchTopstories(searchKey,page+1)}>
+              onClick={()=>this.fetchSearchTopstories(searchKey,page+1)}>
               More
             </ButtonWithLoading>
           </div>
@@ -239,20 +232,38 @@ const midColumn = { width: '30%',};
 const smallColumn = { width: '10%',};
 
 class Table extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      sortKey: 'NONE',
+      isSortReverse: false,
+    };
+    this.onSort = this.onSort.bind(this);
+  }
+
+  onSort(sortKey){
+      const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
+      this.setState({
+        sortKey,
+        isSortReverse,
+      })
+  }
 
   render(){
-    const{
+    const {
       list,
+      onDismiss
+    } = this.props;
+
+    const {
       sortKey,
       isSortReverse,
-      onSort,
-      onDismiss
-    }= this.props;
+    } = this.state;
 
-  const sortedList = SORTS[sortKey](list);
-  const reversedSortedList = isSortReverse
-    ? sortedList.reverse()
-    : sortedList;
+    const sortedList = SORTS[sortKey](list);
+    const reversedSortedList = isSortReverse
+      ? sortedList.reverse()
+      : sortedList;
 
   return(
     <div className='table'>
@@ -260,7 +271,7 @@ class Table extends Component{
         <span style={{ width:'40%'}}>
           <Sort
             sortKey={'TITLE'}
-            onSort={onSort}
+            onSort={this.onSort}
             activeSortKey={sortKey}>
             Title
           </Sort>
@@ -268,7 +279,7 @@ class Table extends Component{
         <span style={{ width:'30%'}}>
           <Sort
             sortKey={'AUTHOR'}
-            onSort={onSort}
+            onSort={this.onSort}
             activeSortKey={sortKey}>
             Author
           </Sort>
@@ -276,7 +287,7 @@ class Table extends Component{
         <span style={{ width:'10%'}}>
           <Sort
             sortKey={'COMMENTS'}
-            onSort={onSort}
+            onSort={this.onSort}
             activeSortKey={sortKey}>
             Comments
           </Sort>
@@ -284,7 +295,7 @@ class Table extends Component{
         <span style={{ width:'10%'}}>
           <Sort
             sortKey={'POINTS'}
-            onSort={onSort}
+            onSort={this.onSort}
             activeSortKey={sortKey}>
             Points
           </Sort>
